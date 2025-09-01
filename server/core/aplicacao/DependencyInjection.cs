@@ -16,6 +16,13 @@ public static class DependencyInjection
     {
         services.AddSerilogConfig(logging, configuration);
 
+        services.AddMediatR(config =>
+        {
+            var assembly = typeof(DependencyInjection).Assembly;
+
+            config.RegisterServicesFromAssembly(assembly);
+        });
+
         return services;
     }
    
