@@ -2,7 +2,7 @@
 
 namespace eAgenda.Infraestrutura.Orm.Compartilhado;
 
-public static class EAgendaDbContextFactory
+public static class AppDbContextFactory
 {
     public static AppDbContext CriarDbContext(string connectionString)
     {
