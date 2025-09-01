@@ -1,7 +1,5 @@
 using eAgenda.Core.Aplicacao.ModuloContato.Cadastrar;
 using eAgenda.Core.Dominio.ModuloContato;
-using eAgenda.WebApi.Models.Contatos;
-using eAgenda.WebApi.Models.Contatos.Cadastrar;
 using eAgenda.WebApi.Models.ModuloContato.Cadastrar;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
