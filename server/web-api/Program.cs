@@ -11,6 +11,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        // Injeção De Dependencias que serão usadas pelo Controller para acessar os dados distribuidos
         builder.Services
             .AddCamadaAplicacao(builder.Logging, builder.Configuration)
             .AddCamadaInfraestruturaOrm(builder.Configuration);
@@ -25,12 +26,14 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
+            //para fazer as migrações é necessario adicionar o pacote Microsoft.EntityFrameworkCore.Tools
             app.ApplyMigrations();
 
-            app.UseSwagger();
+            app.UseSwagger(); 
             app.UseSwaggerUI();
         }
 
+        // Configure the HTTP request pipeline.
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
