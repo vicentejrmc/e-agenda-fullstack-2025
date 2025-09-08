@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace eAgenda.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("contatos")]
 public class ContatoController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
@@ -30,26 +30,6 @@ public class ContatoController(IMediator mediator) : ControllerBase
         var response = new CadastrarContatoResponse(result.Value.Id);
 
         return Created(string.Empty, response);
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<SelecionarContatosResponse>> SelecionarRegistros(
-        [FromQuery] SelecionarContatosRequest? request
-    )
-    {
-        var query = new SelecionarContatosQuery(request?.Quantidade);
-
-        var result = await mediator.Send(query);
-
-        if(result.IsFailed)
-            return BadRequest();
-
-        var response = new SelecionarContatosResponse(
-            result.Value.Contato.Count,
-            result.Value.Contato
-        );
-
-        return Ok(response);
     }
 
     [HttpPut("{id:guid}")] // HttpPut alterar um recurso existente na API
@@ -82,6 +62,38 @@ public class ContatoController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
+    [HttpDelete("{id:guid}")] // HttpDelete para deletar um recurso existente na API
+    public async Task<ActionResult<ExcluirContatoResponse>> Excluir(Guid id)
+    {
+        var command = new ExcluirContatoCommand(id);
+
+        var result = await mediator.Send(command);
+
+        if (result.IsFailed)
+            return BadRequest();
+
+        return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<SelecionarContatosResponse>> SelecionarRegistros(
+    [FromQuery] SelecionarContatosRequest? request
+)
+    {
+        var query = new SelecionarContatosQuery(request?.Quantidade);
+
+        var result = await mediator.Send(query);
+
+        if (result.IsFailed)
+            return BadRequest();
+
+        var response = new SelecionarContatosResponse(
+            result.Value.Contato.Count,
+            result.Value.Contato
+        );
+
+        return Ok(response);
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<SelecionarContatosPorIdResponse>> SelecionarRegistroPorId(Guid id)
