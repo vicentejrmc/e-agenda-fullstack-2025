@@ -1,4 +1,5 @@
-﻿using eAgenda.Core.Aplicacao.Compartilhado;
+﻿using AutoMapper;
+using eAgenda.Core.Aplicacao.Compartilhado;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
@@ -11,6 +12,7 @@ namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 // nessa classe usamos um construtor primario (available in C# 12) para injetar dependencias
 // e implementamos a interface IRequestHandler do MediatR para lidar com o comando SelecionarContatosQuery
 public class SelecionarContatosQueryHandler(
+    IMapper mapper,
     IRepositorioContato repositorioContato,
     ILogger<SelecionarContatosQueryHandler> logger
 ) : IRequestHandler<SelecionarContatosQuery, Result<SelecionarContatosResult>>
@@ -23,16 +25,7 @@ public class SelecionarContatosQueryHandler(
                 await repositorioContato.SelecionarRegistrosAsync(query.Quantidade.Value) :
                 await repositorioContato.SelecionarRegistrosAsync();
 
-            var result = new SelecionarContatosResult(
-                registros.Select(r => new SelecionarContatosDto(
-                    r.Id,
-                    r.Nome,
-                    r.Telefone,
-                    r.Email,
-                    r.Empresa,
-                    r.Cargo
-                )).ToImmutableList()
-            );
+            var result = mapper.Map<SelecionarContatosResult>(registros);
 
             return Result.Ok(result);
         }

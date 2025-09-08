@@ -1,9 +1,11 @@
-﻿using eAgenda.Core.Aplicacao.Compartilhado;
+﻿using AutoMapper;
+using eAgenda.Core.Aplicacao.Compartilhado;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.Compartilhado;
 using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Cadastrar;
@@ -15,6 +17,7 @@ namespace eAgenda.Core.Aplicacao.ModuloContato.Cadastrar;
 // IRequestHandler<TRequest, TResponse> é uma interface do MediatR que define um manipulador para um tipo específico de solicitação (TRequest) e o tipo de resposta esperado (TResponse).
 
 public class CadastrarContatoCommandHandler(
+    IMapper mapper,
     IRepositorioContato repositorioContato,
     IUnitOfWork unitOfWork,
     ILogger<CadastrarContatoCommandHandler> logger
@@ -30,19 +33,22 @@ public class CadastrarContatoCommandHandler(
 
         try
         {
-            var contato = new Contato(
-                command.Nome,
-                command.Telefone,
-                command.Email,
-                command.Empresa,
-                command.Cargo
-            );
+            //var contato = new Contato(
+            //    command.Nome,
+            //    command.Telefone,
+            //    command.Email,
+            //    command.Empresa,
+            //    command.Cargo
+            //);
+
+            var contato = mapper.Map<Contato>(command);
 
             await repositorioContato.CadastrarAsync(contato);
-
             await unitOfWork.CommitAsync();
 
-            var result = new CadastrarContatoResult(contato.Id);
+            //var result = new CadastrarContatoResult(contato.Id);
+
+            var result = mapper.Map<CadastrarContatoResult>(contato);
 
             return Result.Ok(result);
         }
