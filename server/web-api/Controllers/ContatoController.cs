@@ -52,15 +52,46 @@ public class ContatoController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{contatoId:guid}")]
-    public async Task<ActionResult<SelecionarContatosResponse>> SelecionarRegistroPorId(Guid contatoId)
+    [HttpPut("{id:guid}")] // HttpPut alterar um recurso existente na API
+    public async Task<ActionResult> Editar(Guid id, EditarContatoRequest request)
     {
-        var query = new SelecionarContatosPorIdQuery(contatoId);
+        // junta os dados do id da url com o corpo da requisição
+        var command = new EditarContatoCommand(
+            id,
+            request.Nome,
+            request.Telefone,
+            request.Email,
+            request.Empresa,
+            request.Cargo
+        );
+
+        var result = await mediator.Send(command);
+
+        if (result.IsFailed)
+            return BadRequest();
+
+        // retorna os dados editados
+        var response = new EditarContatoResponse(
+            result.Value.Nome,
+            result.Value.Telefone,
+            result.Value.Email,
+            result.Value.Empresa,
+            result.Value.Cargo
+        );
+
+        return Ok(response);
+    }
+
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<SelecionarContatosPorIdResponse>> SelecionarRegistroPorId(Guid id)
+    {
+        var query = new SelecionarContatosPorIdQuery(id);
 
         var result = await mediator.Send(query);
 
         if(result.IsFailed)
-            return NotFound(contatoId);
+            return NotFound(id);
 
         var response = new SelecionarContatosPorIdResponse(
             result.Value.Id,
