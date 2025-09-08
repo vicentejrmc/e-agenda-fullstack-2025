@@ -9,25 +9,10 @@ namespace eAgenda.WebApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ContatoController : ControllerBase
+public class ContatoController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator mediator;
-    private readonly IRepositorioContato repositorioContato;
-    private readonly ILogger<ContatoController> logger;
-
-    public ContatoController(
-        IMediator mediator,
-        IRepositorioContato repositorioContato,
-        ILogger<ContatoController> logger
-    )
-    {
-        this.mediator = mediator;
-        this.repositorioContato = repositorioContato;
-        this.logger = logger;
-    }
-
     [HttpPost]
-    public async Task<IActionResult> Cadastrar(CadastrarContatoRequest request)
+    public async Task<ActionResult<CadastrarContatoResult>> Cadastrar(CadastrarContatoRequest request)
     {
         var command = new CadastrarContatoCommand(
              request.Nome,
@@ -48,12 +33,22 @@ public class ContatoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> SelecionarRegistros(
+    public async Task<ActionResult<SelecionarContatosResponse>> SelecionarRegistros(
         [FromQuery] SelecionarContatosRequest? request
     )
     {
-        var registros = await repositorioContato.SelecionarRegistrosAsync();
+        var query = new SelecionarContatosQuery(request?.Quantidade);
 
-        return Ok(registros);
+        var result = await mediator.Send(query);
+
+        if(result.IsFailed)
+            return BadRequest();
+
+        var response = new SelecionarContatosResponse(
+            result.Value.Contato.Count,
+            result.Value.Contato
+        );
+
+        return Ok(response);
     }
 }
