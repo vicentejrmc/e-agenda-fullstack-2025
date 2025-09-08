@@ -51,4 +51,27 @@ public class ContatoController(IMediator mediator) : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpGet("{contatoId:guid}")]
+    public async Task<ActionResult<SelecionarContatosResponse>> SelecionarRegistroPorId(Guid contatoId)
+    {
+        var query = new SelecionarContatosPorIdQuery(contatoId);
+
+        var result = await mediator.Send(query);
+
+        if(result.IsFailed)
+            return NotFound(contatoId);
+
+        var response = new SelecionarContatosPorIdResponse(
+            result.Value.Id,
+            result.Value.Nome,
+            result.Value.Telefone,
+            result.Value.Email,
+            result.Value.Empresa,
+            result.Value.Cargo,
+            result.Value.Compromissos
+            );
+
+        return Ok(response);
+    }
 }
