@@ -1,4 +1,5 @@
 ﻿using eAgenda.Core.Aplicacao.Compartilhado;
+using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.Compartilhado;
 using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
@@ -6,6 +7,12 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Cadastrar;
+
+// o handler processa o comando, implementando a lógica de negócio associada ao comando.
+// ele interage com o repositório para persistir os dados e usa o unit of work para garantir a atomicidade da operação.
+// ele também lida com erros, retornando resultados apropriados.
+// o handler é registrado na injeção de dependências para que o MediatR possa resolvê-lo quando o comando for enviado.
+// IRequestHandler<TRequest, TResponse> é uma interface do MediatR que define um manipulador para um tipo específico de solicitação (TRequest) e o tipo de resposta esperado (TResponse).
 
 public class CadastrarContatoCommandHandler(
     IRepositorioContato repositorioContato,

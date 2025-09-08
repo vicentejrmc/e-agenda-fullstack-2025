@@ -1,6 +1,7 @@
 using eAgenda.Core.Aplicacao.ModuloContato.Cadastrar;
+using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.ModuloContato;
-using eAgenda.WebApi.Models.ModuloContato.Cadastrar;
+using eAgenda.WebApi.Models.ModuloContato;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,7 +48,9 @@ public class ContatoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> SelecionarRegistros()
+    public async Task<IActionResult> SelecionarRegistros(
+        [FromQuery] SelecionarContatosRequest? request
+    )
     {
         var registros = await repositorioContato.SelecionarRegistrosAsync();
 
