@@ -7,7 +7,7 @@ public record SelecionarContatosQuery(int? Quantidade) : IRequest<Result<Selecio
 
 
 // Retorna uma lista de objetos selecionados. ajuda a isolar a estrutura de dados retornada.
-public record SelecionarContatosResult(ImmutableList<SelecionarContatosDto> Contato);
+public record SelecionarContatosResult(ImmutableList<SelecionarContatosDto> Contatos);
 
 public record SelecionarContatosDto(
     Guid Id,

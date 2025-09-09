@@ -45,7 +45,7 @@ public class ContatoController(IMediator mediator, IMapper mapper) : ControllerB
     [HttpDelete("{id:guid}")] // HttpDelete para deletar um recurso existente na API
     public async Task<ActionResult<ExcluirContatoResponse>> Excluir(Guid id)
     {
-        var command = new ExcluirContatoCommand(id);
+        var command = mapper.Map<ExcluirContatoCommand>(id);
 
         var result = await mediator.Send(command);
 
@@ -60,17 +60,14 @@ public class ContatoController(IMediator mediator, IMapper mapper) : ControllerB
     [FromQuery] SelecionarContatosRequest? request
 )
     {
-        var query = new SelecionarContatosQuery(request?.Quantidade);
+        var query = mapper.Map<SelecionarContatosQuery>(request);
 
         var result = await mediator.Send(query);
 
         if (result.IsFailed)
             return BadRequest();
 
-        var response = new SelecionarContatosResponse(
-            result.Value.Contato.Count,
-            result.Value.Contato
-        );
+        var response = mapper.Map<SelecionarContatosResponse>(result.Value);
 
         return Ok(response);
     }
@@ -78,22 +75,14 @@ public class ContatoController(IMediator mediator, IMapper mapper) : ControllerB
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<SelecionarContatosPorIdResponse>> SelecionarRegistroPorId(Guid id)
     {
-        var query = new SelecionarContatosPorIdQuery(id);
+        var query = mapper.Map<SelecionarContatosPorIdQuery>(id);
 
         var result = await mediator.Send(query);
 
         if(result.IsFailed)
             return NotFound(id);
 
-        var response = new SelecionarContatosPorIdResponse(
-            result.Value.Id,
-            result.Value.Nome,
-            result.Value.Telefone,
-            result.Value.Email,
-            result.Value.Empresa,
-            result.Value.Cargo,
-            result.Value.Compromissos
-            );
+        var response = mapper.Map<SelecionarContatosPorIdResult>(result.Value);
 
         return Ok(response);
     }
