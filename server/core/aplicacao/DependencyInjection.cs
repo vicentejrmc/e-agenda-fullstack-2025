@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -17,25 +18,27 @@ public static class DependencyInjection
     {
         services.AddSerilogConfig(logging, configuration); // Configuração do Serilog
 
+        var assembly = typeof(DependencyInjection).Assembly;
+        var licenseKey = configuration["AUTOMAPPER_LICENSE_KEY"];
+
+        if (string.IsNullOrWhiteSpace(licenseKey))
+            throw new Exception("A variável AUTOMAPPER_LICENSE_KEY não foi fornecida.");
+
         // Configuração do MediatR para injeção de dependências.
         services.AddMediatR(config =>
         {
-            var assembly = typeof(DependencyInjection).Assembly;
-
             config.RegisterServicesFromAssembly(assembly);
-        });
 
+            config.LicenseKey = licenseKey;
+        });
         // Configuração do AutoMapper para injeção de dependencias, passando o Assembly(dll) da proria classe
         services.AddAutoMapper(config =>
         {
-            var licenseKey = configuration["AUTOMAPPER_LICENSE_KEY"];
-
-            if (string.IsNullOrWhiteSpace(licenseKey))
-                throw new Exception("A variável AUTOMAPPER_LICENSE_KEY não foi fornecida.");
-
             config.LicenseKey = licenseKey;
 
-        }, typeof(DependencyInjection).Assembly);
+        }, assembly);
+
+        services.AddValidatorsFromAssembly(assembly);
 
         return services;
     }
