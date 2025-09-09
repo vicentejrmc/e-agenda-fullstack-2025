@@ -9,8 +9,6 @@ using System.Collections.Immutable;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
-// nessa classe usamos um construtor primario (available in C# 12) para injetar dependencias
-// e implementamos a interface IRequestHandler do MediatR para lidar com o comando SelecionarContatosQuery
 public class SelecionarContatosQueryHandler(
     IMapper mapper,
     IRepositorioContato repositorioContato,

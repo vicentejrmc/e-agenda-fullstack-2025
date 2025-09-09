@@ -1,5 +1,6 @@
 using eAgenda.Core.Aplicacao;
 using eAgenda.Infraestrutura.Orm;
+using eAgenda.WebApi.AutoMapper;
 using eAgenda.WebApi.Orm;
 
 namespace eAgenda.WebApi;
@@ -15,6 +16,8 @@ public class Program
         builder.Services
             .AddCamadaAplicacao(builder.Logging, builder.Configuration)
             .AddCamadaInfraestruturaOrm(builder.Configuration);
+
+        builder.Services.AddAutoMapperProfiles(builder.Configuration);
 
         builder.Services.AddControllers();
 

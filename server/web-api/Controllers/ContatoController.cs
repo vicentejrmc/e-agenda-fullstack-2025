@@ -1,6 +1,5 @@
-using eAgenda.Core.Aplicacao.ModuloContato.Cadastrar;
+using AutoMapper;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
-using eAgenda.Core.Dominio.ModuloContato;
 using eAgenda.WebApi.Models.ModuloContato;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -9,25 +8,20 @@ namespace eAgenda.WebApi.Controllers;
 
 [ApiController]
 [Route("contatos")]
-public class ContatoController(IMediator mediator) : ControllerBase
+public class ContatoController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<CadastrarContatoResult>> Cadastrar(CadastrarContatoRequest request)
     {
-        var command = new CadastrarContatoCommand(
-             request.Nome,
-             request.Telefone,
-             request.Email,
-             request.Empresa,
-             request.Cargo
-        );
+        var command = mapper.Map<CadastrarContatoCommand>(request);
 
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
             return BadRequest();
 
-        var response = new CadastrarContatoResponse(result.Value.Id);
+        var response = mapper.Map<CadastrarContatoResponse>(result.Value); 
+        // Dê atenção ao .Value para que o mapeamento pegue a referencia correda do ContatoResult que esta embrulada no result
 
         return Created(string.Empty, response);
     }
@@ -35,29 +29,15 @@ public class ContatoController(IMediator mediator) : ControllerBase
     [HttpPut("{id:guid}")] // HttpPut alterar um recurso existente na API
     public async Task<ActionResult> Editar(Guid id, EditarContatoRequest request)
     {
-        // junta os dados do id da url com o corpo da requisição
-        var command = new EditarContatoCommand(
-            id,
-            request.Nome,
-            request.Telefone,
-            request.Email,
-            request.Empresa,
-            request.Cargo
-        );
+        // Tupla, objeto formado por dois argumentos                           //argumentos do que será passado
+        var command = mapper.Map<(Guid, EditarContatoRequest), EditarContatoCommand>((id, request));
 
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
             return BadRequest();
 
-        // retorna os dados editados
-        var response = new EditarContatoResponse(
-            result.Value.Nome,
-            result.Value.Telefone,
-            result.Value.Email,
-            result.Value.Empresa,
-            result.Value.Cargo
-        );
+        var response = mapper.Map<EditarContatoResponse>(result.Value);
 
         return Ok(response);
     }
